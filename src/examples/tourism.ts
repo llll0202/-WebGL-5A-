@@ -6,8 +6,8 @@ import { onDrillDown } from '../core/drill'
 import { showDetail } from '../core/detail'
 import { changeRegion } from '../core/region'
 
-const PATH = '/geoJson/'
-const TOURISM_PATH = '/tourism/'
+const PATH = '${BASE}geoJson/'
+const TOURISM_PATH = '${BASE}tourism/'
 
 export default {
   name: '全国5A景区',
