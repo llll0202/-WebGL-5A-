@@ -278,6 +278,7 @@ export default class Map3D extends GLRenderer {
       const evt = child.__contain__(ray)
       if (evt) return evt
     }
+    //如果没有任何子元素被点击，则返回地图本身，这样可以确保在点击地图的空白区域时仍然能够触发地图的相关事件和交互功能
     return this
   }
 
