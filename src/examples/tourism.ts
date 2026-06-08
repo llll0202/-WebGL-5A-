@@ -6,6 +6,8 @@ import { onDrillDown } from '../core/drill'
 import { showDetail } from '../core/detail'
 import { changeRegion } from '../core/region'
 
+const BASE = import.meta.env.BASE_URL
+
 const PATH = '${BASE}geoJson/'
 const TOURISM_PATH = '${BASE}tourism/'
 
