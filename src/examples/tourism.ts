@@ -31,7 +31,7 @@ export default {
     const txtPanel = map.createChild('TexturePanel')
     txtPanel.setProps({
       radius: 1.5,
-      url: '/assets/txt.png',
+      url: BASE + 'assets/txt.png',
       duration: -1,
       opacity: 0.3,
     })
@@ -40,7 +40,7 @@ export default {
     const circleBasePanel = map.createChild('TexturePanel')
     circleBasePanel.setProps({
       radius: 1,
-      url: '/assets/circle1.png',
+      url: BASE + 'assets/circle1.png',
       duration: 30000,
       blur: 2,
       opacity: 0.1,
