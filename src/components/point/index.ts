@@ -10,7 +10,7 @@ import AnimationUtil from '../../engine/animation/AnimationUtil'
 export default class Point extends GLPanelLayer {
   props: any = {
     duration: 5000,
-    number: 4,
+    number: 3,
   }
   needUpdate: boolean = true
   ticker: any = null

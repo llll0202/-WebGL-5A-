@@ -5,9 +5,23 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: () => import('../App.vue'),
+      redirect: '/home',
     },
+    {
+      path: '/home',
+      component: () => import('@/views/Home/index.vue'),
+      children: [
+        {
+          path: '',
+          redirect: '/home/map',
+        },
+        {
+          path: 'map/:provinceName?',
+          name: 'map',
+          component: () => import('@/views/Home/Country.vue'),
+        },
+      ],
+    }
   ],
 })
 

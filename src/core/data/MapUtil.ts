@@ -1,4 +1,5 @@
-// MapUtil模块提供了一些用于处理地图数据的工具函数，这些函数可以用于将GeoJSON数据转换为适合地图渲染的数据结构，以及进行坐标转换等操作
+// MapUtil模块提供了一些用于处理地图数据的工具函数，
+// 这些函数可以用于将GeoJSON数据转换为适合地图渲染的数据结构，以及进行坐标转换等操作
 
 // build函数是MapUtil模块中的一个核心函数，它用于将GeoJSON数据转换为适合地图渲染的数据结构，
 // build函数会根据GeoJSON数据的类型来处理不同的几何对象，例如点、线、面等，并将这些对象转换为包含坐标和边界框等信息的数据结构，
@@ -148,6 +149,7 @@ function buildLine(pointsList: number[][], projection: string): any {
   }
 }
 
+//转换成地图坐标，默认使用墨卡托投影
 function convert([lng, lat]: number[], projection: string = 'Mercator'): number[] | null {
   lng -= 0
   lat -= 0
@@ -159,6 +161,7 @@ function convert([lng, lat]: number[], projection: string = 'Mercator'): number[
     }
     default:
     case 'Mercator': {
+      //经过了归一化处理，0-1之间
       return [
         (180 + lng) / 360,
         -90 == lat
@@ -172,6 +175,7 @@ function convert([lng, lat]: number[], projection: string = 'Mercator'): number[
   }
 }
 
+//将地图坐标转换回经纬度坐标，默认使用墨卡托投影
 function inverse([x, y]: number[], projection: string = 'Mercator'): number[] {
   switch (projection) {
     case 'WGS84': {

@@ -6,7 +6,6 @@ import { onDrillDown } from '../core/drill'
 import { showDetail } from '../core/detail'
 import { changeRegion } from '../core/region'
 
-
 const BASE = import.meta.env.BASE_URL
 
 const PATH = BASE + 'geoJson/'
@@ -114,6 +113,20 @@ export default {
 
     // 景区散点
     const point = map.createChild('Point')
+    //不同层级对应不同的点半径大小
+    function getPointRadius(adcode?: string) {
+      if (!adcode) return 20
+
+      if (adcode.endsWith('0000')) {
+        return 25 // 省级
+      }
+
+      if (adcode.endsWith('00')) {
+        return 40 // 市级
+      }
+
+      return 20
+    }
     // 根据省份代码过滤景点数据
     function getPointData(spotsData: any[], mapData: MapData, adcode?: string) {
       return (
@@ -140,14 +153,15 @@ export default {
             return {
               pointType: 'position',
               point: position,
-              radius: 10,
-              color: '#ff6600',
+              radius: getPointRadius(adcode),
+              color: '#ff8800b7',
               detail: spot,
             }
           })
           .filter(Boolean)
       )
     }
+
     point.setData(getPointData(spotsData, mapData))
     // console.log("spotsData", pointData);
     point.height = HEIGHT
@@ -210,6 +224,7 @@ export default {
     })
     hoverArea.height = HEIGHT
 
+    // Boundary - 鼠标移动高亮边界
     const hoverBoundary = map.createChild('Boundary')
     hoverBoundary.setProps({
       color: '#FF0',
@@ -236,26 +251,63 @@ export default {
     })
     hoverSection.height = HEIGHT
 
-    // 下钻交互
-    backgroundArea.on('areaClick', async (area: any) => {
-      const adcode: Number = area.properties.adcode
-      changeRegion(area.properties.name)
-      // console.log('点击了区域', area.properties.name, adcode)
-      mapData.setData(await JsonUtil.loadJson(PATH + area.properties.adcode + '.json'))
-      boundaryData.setData(
-        await JsonUtil.loadJson(PATH + area.properties.adcode + '_boundary.json'),
-      )
-      // 下钻后只显示该省景点
-      point.setData(getPointData(spotsData, mapData, adcode.toString()))
+    //页面下钻的函数封装
+    async function drillToRegion(adcode: string, name: string) {
+      changeRegion(name)
+      // console.log(adcode, name)
+      const [geoJson, boundaryGeoJson] = await Promise.all([
+        JsonUtil.loadJson(PATH + adcode + '.json'),
+        JsonUtil.loadJson(PATH + adcode + '_boundary.json'),
+      ])
+
+      mapData.setData(geoJson)
+      boundaryData.setData(boundaryGeoJson)
+      point.setData(getPointData(spotsData, mapData, adcode))
 
       onDrillDown(async () => {
+        // console.log('下钻数据加载完成：', geoJson, boundaryGeoJson)
         mapData.setData(await JsonUtil.loadJson(PATH + '100000.json'))
-        // console.log(PATH + '100000.json')
         boundaryData.setData(await JsonUtil.loadJson(PATH + '100000_boundary.json'))
-        // 返回全国时恢复所有景点
         point.setData(getPointData(spotsData, mapData))
       })
+    }
+
+    // 下钻交互
+    backgroundArea.on('areaClick', async (area: any) => {
+      await drillToRegion(area.properties.adcode.toString(), area.properties.name)
     })
+
+    //生成搜索列表
+    function buildRegionSearchOptions(spotsData: any[], countryGeoJson: any) {
+      const map = new Map<string, { name: string; adcode: string; level: 'province' | 'city' }>()
+
+      // 省份名称以 100000.json 为准，避免 spots 数据里出现“陕西省、山西省”这种脏数据
+      for (const feature of countryGeoJson.features || []) {
+        const name = feature.properties?.name
+        const adcode = feature.properties?.adcode?.toString()
+
+        if (name && adcode) {
+          map.set(adcode, {
+            name,
+            adcode,
+            level: 'province',
+          })
+        }
+      }
+
+      // 城市仍然从景区数据里取
+      for (const spot of spotsData) {
+        if (spot.cityName && spot.cityCode) {
+          map.set(spot.cityCode, {
+            name: spot.cityName,
+            adcode: spot.cityCode,
+            level: 'city',
+          })
+        }
+      }
+
+      return Array.from(map.values())
+    }
 
     map.addChild(
       backgroundArea,
@@ -275,6 +327,7 @@ export default {
       hoverSection,
     )
 
+    // 设置数据
     boundary.setMapData(boundaryData)
     circleBasePanel.setMapData(boundaryData)
     txtPanel.setMapData(boundaryData)
@@ -317,5 +370,10 @@ export default {
         hoverMapData.setDataFilter(() => false) // 过滤掉所有，高亮消失
       }
     })
+    //返回一个对象，包含搜索选项和下钻函数
+    return {
+      searchOptions: buildRegionSearchOptions(spotsData, geoJson),
+      drillToRegion,
+    }
   },
 }

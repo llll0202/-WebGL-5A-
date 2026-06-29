@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-     "deploy": "gh-pages -d dist",
+    "deploy": "gh-pages -d dist",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "run-s lint:*",
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "earcut": "^3.0.2",
+    "element-plus": "^2.14.2",
     "fontfaceobserver": "^2.3.0",
     "pinia": "^3.0.4",
     "vue": "^3.5.32",

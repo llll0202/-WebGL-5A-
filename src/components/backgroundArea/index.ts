@@ -105,7 +105,7 @@ export default class BackgroundArea extends GLPanelLayer {
     this.updateSelf()
   }
 
-  //
+  //p是交点坐标，
   contain(p: any) {
     const data = this.mapData?.getData()
     if (!data) return false

@@ -55,6 +55,7 @@ export default class GLPanelLayer extends Node {
     return false
   }
 
+  //求射线与平面的交点坐标，这个时候交点坐标的z值为0，如果交点在面内则返回this，否则返回null
   __contain__(ray: Ray): any {
     if (this.$ignoreEvent || !this.mapData) return false
     const height = this.mapData.convertSize(this.height)
