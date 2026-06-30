@@ -1,4 +1,7 @@
 # landscape5A
+<img width="1867" height="1006" alt="图片" src="https://github.com/user-attachments/assets/e5c82833-6c73-4a72-b174-b7ecd41877e6" />
+<img width="1839" height="1004" alt="图片" src="https://github.com/user-attachments/assets/c89d5fc2-53fa-4363-b4ef-f930db24c7e0" />
+
 
 This template should help get you started developing with Vue 3 in Vite.
 
