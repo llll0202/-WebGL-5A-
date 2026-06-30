@@ -6,7 +6,8 @@ export default class EventTarget {
     this.handlers = {}
   }
 
-  //触发事件
+  //触发事件，真正调用事件监听器回调函数的地方，传入事件类型和事件对象参数，
+  // 找到对应事件类型的监听器数组，依次调用回调函数，如果是一次性事件监听器则调用后移除
   fire(type: string, event?: any) {
     const handlers = this.handlers[type]
     if (!handlers) return
@@ -30,7 +31,7 @@ export default class EventTarget {
     this.on(type, callback, { once: true })
   }
 
-  //注册监听，option参数里可以设置once属性，表示是否一次性事件监听器
+  //注册监听，option参数里可以设置once属性，表示是否一次性事件监听器，在这里存储事件类型和回调函数
   on(type: string, callback: Function, option?: { once?: boolean }) {
     const once = option ? option.once : false
     let handlers = this.handlers[type]

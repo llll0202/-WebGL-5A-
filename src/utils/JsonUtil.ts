@@ -8,14 +8,10 @@
 // 2. 短时间内多个相同 URL 的并发请求会合并成一次真实请求。
 // 3. 通过 LRU 上限控制缓存数量，避免用户连续下钻很多区域后内存一直增长。
 const MAX_JSON_CACHE_SIZE = 10
-
 const jsonCache = new Map<string, Promise<any>>()
-
 function getJsonCache(url: string) {
   const task = jsonCache.get(url)
-
   if (!task) return null
-
   // Map 会按照插入顺序保存 key。
   // 命中缓存后先删除再插入，可以把当前 URL 移动到最后，
   // 表示它是最近使用过的数据。
@@ -24,16 +20,12 @@ function getJsonCache(url: string) {
 
   return task
 }
-
 function setJsonCache(url: string, task: Promise<any>) {
   if (jsonCache.has(url)) {
     jsonCache.delete(url)
   }
-
   jsonCache.set(url, task)
-
   if (jsonCache.size <= MAX_JSON_CACHE_SIZE) return
-
   // Map 的第一个 key 就是最久没有访问的数据。
   // 超出缓存上限时，删除最旧的一项。
   const oldestUrl = jsonCache.keys().next().value
@@ -42,16 +34,14 @@ function setJsonCache(url: string, task: Promise<any>) {
     jsonCache.delete(oldestUrl)
   }
 }
-
 const JsonUtil = {
   loadJson(url: string): Promise<any> {
     const cachedTask = getJsonCache(url)
 
     if (cachedTask) {
       return cachedTask
-    }
-
-    const task = fetch(url)
+    }else{
+      const task = fetch(url)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`request failed: ${url}`)
@@ -71,6 +61,7 @@ const JsonUtil = {
     setJsonCache(url, task)
 
     return task
+    }
   },
 }
 
